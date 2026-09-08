@@ -1,0 +1,27 @@
+# Linework
+#
+# Crawling the marketing pages is fine and welcome. Everything that accepts
+# or reveals data is not - see the note below.
+User-agent: *
+Allow: /$
+Allow: /legal/
+
+# The API accepts guesses. A crawler following links into it would insert
+# junk into a research dataset, and this is the polite half of preventing
+# that - the enforcing half is rate limiting, bot screening and the
+# suspect-flagging pipeline, because a robots.txt is a request, not a
+# control, and anything hostile ignores it entirely.
+Disallow: /api/
+Disallow: /admin/
+Disallow: /account
+Disallow: /history
+Disallow: /signin
+Disallow: /signup
+
+# Individual charts are excluded so a crawler cannot walk the whole dataset
+# and so the answers are not indexed - a search result that reveals how a
+# chart ends would spoil the one thing the game depends on.
+Disallow: /play/
+
+# No crawl-delay directive: it is non-standard, widely ignored, and the real
+# limit is enforced server-side per address.

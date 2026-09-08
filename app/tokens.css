@@ -1,0 +1,209 @@
+/**
+ * The only file in the project allowed to contain a literal colour, a literal
+ * spacing value, or a font name. Everything else reads these.
+ *
+ * scripts/check-design.sh enforces that. If a component ever needs editing to
+ * change a colour, this file has failed at its job.
+ *
+ * ---------------------------------------------------------------------------
+ * DIRECTION (rewritten 2026-08-27, replacing the riso two-ink system)
+ * ---------------------------------------------------------------------------
+ * Values below are taken from the human's own Repaint mock, measured rather
+ * than eyeballed. The look: warm paper, near-black ink, hard 2px rules, zero
+ * corner radius, solid offset shadows with no blur, and hand-marker lettering
+ * used at poster scale.
+ *
+ * The earlier riso palette and its "two inks only / pink means real data"
+ * rule are GONE, retired explicitly by the human ("absolutely forget about
+ * the blocked designs"). Anything still referring to --ink-crowd or
+ * --ink-truth is reading the chart aliases near the bottom of this file,
+ * which are kept precisely so that no chart component needed rewriting.
+ */
+
+:root {
+  /* --- surfaces --------------------------------------------------------- */
+
+  /** Warm off-white. The page ground. */
+  --paper: #f8f7f2;
+
+  /** Cards and any panel that has to sit above the paper. */
+  --surface: #ffffff;
+
+  /** The region of a chart the player has to predict. */
+  --paper-sunk: #d7d3ca;
+
+  /** Full-bleed dark sections. */
+  --ink-black: #111111;
+
+  /* --- accents ---------------------------------------------------------- */
+
+  --yellow: #f5df3d;
+  --violet: #6844ff;
+  --pink: #ff3eaa;
+  --mint: #b9eee6;
+
+  /*
+   * Reliability badge colours. Literal green and red, not the riso palette -
+   * this is a status signal an admin reads at a glance across hundreds of
+   * rows, and borrowing the brand inks would make it prettier and slower to
+   * read. Yellow reuses --yellow, which already means "attention" here.
+   */
+  --rel-green: #1f9d55;
+  --rel-red: #c0392b;
+
+  /* --- text ------------------------------------------------------------- */
+
+  --ink: #111111;
+  --ink-muted: #5d5b68;
+  --ink-on-dark: #ffffff;
+
+  /* --- rules ------------------------------------------------------------ */
+
+  --rule: #111111;
+  --rule-soft: #d7d3ca;
+  --rule-faint: #bcb8af;
+
+  /* --- chart aliases ---------------------------------------------------- */
+  /*
+   * The chart components (Chart, InkPaths, DrawTheLine, the history and
+   * admin sparklines) were written in Phase 1 to read --ink-crowd and
+   * --ink-truth and have never been changed since. Keeping those two names
+   * pointing at the new palette is what let this entire re-skin happen
+   * without editing their rendering code - the same bet this file has been
+   * making since Phase 1, now cashed in for a third visual direction.
+   *
+   * The MEANING is unchanged and still matters: --ink-crowd is what people
+   * drew, --ink-truth is what actually happened.
+   */
+  --ink-crowd: #6844ff;
+  --ink-truth: #ff3eaa;
+
+  /** Where crowd and truth overlap, for contexts that cannot blend. */
+  --ink-overlap: #6844ff;
+
+  /** Score callouts. */
+  --ink-highlight: #f5df3d;
+
+  /* Legacy tint names still referenced by chart internals. */
+  --ink-soft: #5d5b68;
+  --ink-rule: #d7d3ca;
+  --ink-faint: #bcb8af;
+
+  /* --- ink behaviour ---------------------------------------------------- */
+
+  /**
+   * Crowd paths stack toward opacity so density reads as agreement. Higher
+   * than the old riso value because these paths now print on white cards
+   * rather than tinted paper, where 4% simply disappeared.
+   */
+  --crowd-path-opacity: 0.06;
+  --guess-opacity: 1;
+  --ink-blend: multiply;
+
+  /* --- space ------------------------------------------------------------ */
+
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /** Reading column. */
+  --measure: 40rem;
+  /** The mock's container: max-w-6xl. */
+  --measure-wide: 72rem;
+  --page-pad: 1.25rem;
+
+  /* --- line and edge ----------------------------------------------------- */
+
+  /** Every border in this design is the same weight. */
+  --stroke-frame: 2px;
+  --stroke-rule: 1px;
+  --stroke-truth: 3px;
+  --stroke-guess: 2.5px;
+  --stroke-crowd: 2px;
+  --stroke-boundary: 1.5px;
+
+  /** Hard offset shadows, no blur. The signature of this design. */
+  --offset-sm: 4px;
+  --offset-md: 6px;
+  --offset-lg: 12px;
+
+  /* --- type -------------------------------------------------------------- */
+  /*
+   * The next/font variables (--font-anton and friends) are set on <html> by
+   * app/layout.tsx. Each is self-hosted at build time, so the fallbacks
+   * below only ever show for the instant before the face loads.
+   */
+
+  /** Poster display. Anton stands in for the mock's Impact - see layout.tsx. */
+  --font-display: var(--font-anton), Impact, Haettenschweiler,
+    "Arial Narrow Bold", "Arial Black", sans-serif;
+
+  /** Editorial serif: headings, questions, body copy on light sections. */
+  --font-body: Georgia, "Times New Roman", serif;
+
+  /** Interface sans, used for prose on the dark sections. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+
+  /** Labels, eyebrows, buttons, axis numbers. Always uppercase, always small. */
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /** Hand marker. Graffiti and section headings. */
+  --font-marker: var(--font-marker-face), "Permanent Marker",
+    "Brush Script MT", cursive;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 3rem;
+
+  /** The hero. 128px at the mock's 1280px width, fluid below that. */
+  --text-display: clamp(3rem, 10vw, 8rem);
+  /** Marker section headings: 72px in the mock. */
+  --text-marker: clamp(2.5rem, 6vw, 4.5rem);
+  --text-score: clamp(3rem, 12vw, 4.5rem);
+
+  --leading-display: 0.86;
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
+  --leading-body: 1.5;
+
+  --tracking-display: -0.025em;
+  --tracking-mono: 0.05em;
+  --tracking-wide: 0.025em;
+
+  --weight-body: 400;
+  --weight-strong: 700;
+
+  /* --- motion ------------------------------------------------------------ */
+
+  --reveal-duration: 900ms;
+  --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* --- targets ----------------------------------------------------------- */
+
+  --tap-target: 44px;
+  --chart-min-height: 300px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /*
+     * Belt to the braces. The reveal rule also has its own reduced-motion
+     * override in globals.css, so the animation is disabled in two independent
+     * places and neither depends on the other surviving a refactor.
+     */
+    --reveal-duration: 0ms;
+  }
+}

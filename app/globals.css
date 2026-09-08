@@ -1,0 +1,1858 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* --- reset ------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Stops iOS Safari inflating text when a chart forces a horizontal reflow. */
+  -webkit-text-size-adjust: 100%;
+  /*
+   * Anchor jumps glide instead of teleporting - the hero's "Scroll to the
+   * chart" link is the one that matters, and a hard jump there loses the
+   * sense that the chart was below you all along.
+   */
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-body);
+  line-height: var(--leading-body);
+  /* The page never scrolls sideways, so a stray drag cannot pan it. */
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+}
+
+/* --- layout ------------------------------------------------------------ */
+
+/*
+ * Every page EXCEPT the homepage. The homepage is built from full-bleed
+ * .band sections that each own their own ground colour, so it deliberately
+ * has no .page wrapper.
+ *
+ * The horizontal padding is not optional: these pages put a .frame directly
+ * inside, and .frame only sets a max-width. Without a gutter here the text
+ * runs into both screen edges on any viewport narrower than the measure.
+ */
+.page {
+  padding: var(--space-8) var(--page-pad) var(--space-9);
+}
+
+@media (min-width: 40rem) {
+  .page {
+    padding-inline: var(--space-6);
+  }
+}
+
+/* The mock's container: max-w-6xl with a 20px gutter, 32px from sm up. */
+.shell {
+  max-width: var(--measure-wide);
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .shell {
+    padding-inline: var(--space-6);
+  }
+}
+
+.frame {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+.frame--wide {
+  max-width: var(--measure-wide);
+}
+
+/* --- type -------------------------------------------------------------- */
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* The poster face. Only ever used very large. */
+.display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--weight-body);
+  color: var(--ink);
+  margin: 0;
+}
+
+/* Editorial serif heading. */
+.title {
+  font-family: var(--font-body);
+  font-size: var(--text-3xl);
+  line-height: var(--leading-snug);
+  font-weight: var(--weight-body);
+  color: var(--ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.title--sm {
+  font-size: var(--text-xl);
+}
+
+/* Hand marker, for section headings and the graffiti. */
+/*
+ * Permanent Marker's lowercase glyphs are a smaller, rougher set of caps,
+ * and the mock relies on that: every marker heading is written in sentence
+ * case with `text-transform: none`, which is what produces the tall initial
+ * letter followed by shorter ones. Forcing uppercase flattens the whole
+ * word to one height and loses the hand-lettered rhythm.
+ */
+.marker {
+  font-family: var(--font-marker);
+  font-size: var(--text-marker);
+  line-height: 0.86;
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--weight-body);
+  margin: 0;
+}
+
+/* The dark band's heading is held to a narrow column - see .why-grid. */
+.marker--narrow {
+  max-width: 20rem;
+}
+
+.marker--pink {
+  color: var(--pink);
+}
+
+.question {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: 1.375;
+  margin: 0;
+  color: var(--ink);
+}
+
+.note {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.prose {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  margin: 0;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-mono);
+}
+
+/*
+ * Visible to screen readers, not to eyes. Used where a section needs a
+ * heading for document structure but the design carries that meaning
+ * visually instead.
+ */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- section grounds ---------------------------------------------------- */
+
+.band {
+  padding-block: var(--space-9);
+}
+
+.band--dark {
+  background: var(--ink-black);
+  color: var(--ink-on-dark);
+}
+
+.band--mint {
+  background: var(--mint);
+}
+
+.band--yellow {
+  background: var(--yellow);
+}
+
+.band--dark .eyebrow {
+  color: var(--yellow);
+}
+
+.band--dark .title,
+.band--dark .question,
+.band--dark .prose {
+  color: var(--ink-on-dark);
+}
+
+/* --- cards -------------------------------------------------------------- */
+
+/*
+ * The signature of this design: white panel, hard 2px black rule, zero
+ * radius, and a SOLID offset shadow with no blur. The offset reads as a
+ * printed displacement rather than a soft glow, which is why blur and
+ * spread are both 0.
+ */
+.card {
+  background: var(--surface);
+  border: var(--stroke-frame) solid var(--rule);
+  border-radius: 0;
+  padding: var(--space-5);
+}
+
+.card--offset-yellow {
+  box-shadow: var(--offset-md) var(--offset-md) 0 0 var(--yellow);
+}
+
+.card--offset-violet {
+  box-shadow: var(--offset-lg) var(--offset-lg) 0 0 var(--violet);
+}
+
+/*
+ * The card lift, straight from the mock: 300ms ease-out, the panel rises
+ * half a rem and its offset shadow simultaneously grows AND changes colour
+ * to pink. The colour change is what makes it read as a state rather than a
+ * wobble - the shadow is not just bigger, it is a different ink.
+ *
+ * :active is paired with :hover throughout because a touchscreen has no
+ * hover state, and this is the one interaction on the page a phone user
+ * would otherwise never see.
+ */
+.card--lift {
+  transition:
+    translate 300ms ease-out,
+    rotate 300ms ease-out,
+    box-shadow 300ms ease-out;
+}
+
+.card--lift:hover,
+.card--lift:focus-within,
+.card--lift:active {
+  translate: 0 -0.5rem;
+  box-shadow: 10px 10px 0 0 var(--pink);
+}
+
+/* The findings cards rest flat and pick up a shadow and a tilt on the way up. */
+.card--lift-tilt:hover,
+.card--lift-tilt:focus-within,
+.card--lift-tilt:active {
+  translate: 0 -0.5rem;
+  rotate: 1deg;
+  box-shadow: 8px 8px 0 0 var(--pink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card--lift {
+    transition: box-shadow 300ms ease-out;
+  }
+  .card--lift:hover,
+  .card--lift:focus-within,
+  .card--lift:active {
+    translate: none;
+    rotate: none;
+  }
+}
+
+/* --- buttons ------------------------------------------------------------ */
+
+.button {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  min-height: var(--tap-target);
+  padding: var(--space-3) var(--space-5);
+  border: var(--stroke-frame) solid var(--rule);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  transition:
+    background-color 140ms var(--reveal-ease),
+    color 140ms var(--reveal-ease),
+    translate 140ms var(--reveal-ease),
+    box-shadow 140ms var(--reveal-ease);
+}
+
+.button--primary {
+  background: var(--ink-black);
+  color: var(--paper);
+}
+
+.button--accent {
+  background: var(--yellow);
+  box-shadow: var(--offset-sm) var(--offset-sm) 0 0 var(--violet);
+}
+
+.button:hover,
+.button:active {
+  background: var(--yellow);
+}
+
+.button--primary:hover,
+.button--primary:active {
+  background: var(--violet);
+  color: var(--paper);
+}
+
+.button--accent:hover,
+.button--accent:active {
+  background: var(--pink);
+}
+
+/*
+ * Pressing moves the button INTO its own shadow - the panel was floating
+ * and is now pressed flat. :active rather than :hover because that is the
+ * one that fires on a touchscreen, which is where most play happens.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .button--accent:active {
+    translate: var(--offset-sm) var(--offset-sm);
+    box-shadow: 0 0 0 0 var(--violet);
+  }
+}
+
+.button:disabled {
+  border-color: var(--rule-faint);
+  background: var(--surface);
+  color: var(--rule-faint);
+  cursor: not-allowed;
+  box-shadow: none;
+  translate: none;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+/* --- graffiti ----------------------------------------------------------- */
+
+/*
+ * The drifting marker words. Values measured off the human's Repaint mock -
+ * see components/GraffitiField.tsx for the markup half.
+ *
+ * The three drift keyframes never return to their start: each runs
+ * `alternate`, so a mark eases out to its end state and then eases back,
+ * which is what makes the motion read as floating rather than looping. The
+ * durations are deliberately co-prime-ish (20/24/18/26s) so the four marks
+ * drift out of phase and the field never visibly resets as a whole.
+ */
+.graffiti-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.graffiti-mark {
+  position: absolute;
+  white-space: nowrap;
+  font-family: var(--font-marker);
+  letter-spacing: -0.04em;
+  line-height: 0.76;
+  font-size: clamp(4.5rem, 13vw, 11rem);
+  color: var(--violet);
+  opacity: 0.14;
+  mix-blend-mode: multiply;
+  /*
+   * Two offset copies of the glyph in its own colour. This is what gives the
+   * marker its chunky, double-inked edge - without it the letterforms read
+   * as thin and printed rather than drawn. Straight from the mock.
+   */
+  text-shadow:
+    3px 2px var(--violet),
+    -2px 1px var(--violet);
+  transform-origin: 50% center;
+  animation: graffiti-drift-a 20s ease-in-out infinite alternate;
+}
+
+.graffiti-mark--outline {
+  color: transparent;
+  -webkit-text-stroke: 3px var(--pink);
+  opacity: 0.28;
+  /* The stroke IS the letterform here; a shadow would double the contour. */
+  text-shadow: none;
+  animation-name: graffiti-drift-b;
+}
+
+.graffiti-mark--yellow {
+  color: var(--yellow);
+  opacity: 0.42;
+  -webkit-text-stroke: 1px var(--ink);
+  text-shadow: 2px 2px var(--ink);
+  animation-name: graffiti-drift-c;
+}
+
+.graffiti-mark--one {
+  top: 2%;
+  left: -9%;
+}
+
+.graffiti-mark--two {
+  top: 34%;
+  right: -11%;
+  font-size: clamp(4.5rem, 12vw, 10rem);
+  animation-duration: 24s;
+}
+
+.graffiti-mark--three {
+  top: 67%;
+  left: 6%;
+  font-size: clamp(4.5rem, 11vw, 9rem);
+  animation-duration: 18s;
+}
+
+.graffiti-mark--four {
+  bottom: 1%;
+  right: 2%;
+  font-size: clamp(5rem, 14vw, 12rem);
+  animation-duration: 26s;
+}
+
+@keyframes graffiti-drift-a {
+  0% {
+    transform: translate(-2%, -2%) rotate(-9deg) skew(-3deg);
+  }
+  100% {
+    transform: translate(8%, 5%) rotate(-3deg) skew(2deg);
+  }
+}
+
+@keyframes graffiti-drift-b {
+  0% {
+    transform: translate(4%, 3%) rotate(8deg) skew(2deg);
+  }
+  100% {
+    transform: translate(-8%, -5%) rotate(1deg) skew(-3deg);
+  }
+}
+
+@keyframes graffiti-drift-c {
+  0% {
+    transform: translate(-2%, 5%) rotate(-4deg) skew(-2deg);
+  }
+  100% {
+    transform: translate(5%, -4%) rotate(4deg) skew(3deg);
+  }
+}
+
+/*
+ * Continuous ambient motion is exactly what a motion sensitivity is about,
+ * so the marks hold still. They keep their end-state rotation so the field
+ * still looks composed rather than mechanically aligned.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .graffiti-mark {
+    animation: none;
+    transform: rotate(-9deg);
+  }
+  .graffiti-mark--two {
+    transform: rotate(8deg);
+  }
+  .graffiti-mark--three {
+    transform: rotate(-4deg);
+  }
+  .graffiti-mark--four {
+    transform: rotate(-12deg);
+  }
+}
+
+/* One oversized static mark, for the dark band. */
+.graffiti-single {
+  position: absolute;
+  top: var(--space-7);
+  /* Anchored to the RIGHT and allowed to run off it. Anchoring from the left
+     pushed this across the prose column and made both unreadable. */
+  right: calc(var(--space-7) * -1);
+  font-family: var(--font-marker);
+  font-size: clamp(7rem, 23vw, 20rem);
+  line-height: 0.72;
+  letter-spacing: var(--tracking-display);
+  color: var(--violet);
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* --- header / footer ---------------------------------------------------- */
+
+.site-nav {
+  border-bottom: var(--stroke-frame) solid var(--rule);
+  background: var(--paper);
+  position: relative;
+  z-index: 20;
+}
+
+.site-nav-inner {
+  max-width: var(--measure-wide);
+  margin-inline: auto;
+  padding: var(--space-4) var(--page-pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  /* Containing block for the mobile menu panel, which is absolutely placed. */
+  position: relative;
+}
+
+@media (min-width: 40rem) {
+  .site-nav-inner {
+    padding-inline: var(--space-6);
+  }
+}
+
+.site-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.site-nav-mark {
+  width: 1.25rem;
+  height: 1.25rem;
+  mix-blend-mode: multiply;
+}
+
+.site-nav-wordmark {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.site-nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+.site-nav-links a {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 4px;
+}
+
+.site-nav-links a:hover {
+  text-decoration: underline;
+}
+
+/*
+ * The mobile menu.
+ *
+ * The nav grew to six items for a signed-in admin (Play, Your answers,
+ * Account, Admin, Contact, Sign out) and was already wrapping onto three
+ * cramped lines on a phone before Contact was added. Below 720px it collapses
+ * behind a button; above, nothing changes and the toggle does not exist.
+ *
+ * 720px rather than a smaller breakpoint because the wrapping starts well
+ * before the usual phone width - the links are uppercase mono, which is wide.
+ */
+.site-nav-toggle {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--stroke-frame) solid var(--rule);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  min-height: var(--tap-target);
+}
+
+@media (max-width: 720px) {
+  .site-nav-toggle {
+    display: block;
+  }
+
+  .site-nav-links {
+    /* Out of flow so opening the menu does not shove the page down. */
+    position: absolute;
+    top: 100%;
+    right: var(--page-pad);
+    left: var(--page-pad);
+    z-index: 20;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--surface);
+    border: var(--stroke-frame) solid var(--rule);
+    box-shadow: var(--offset-md) var(--offset-md) 0 var(--violet);
+  }
+
+  .site-nav-links.is-open {
+    display: flex;
+  }
+
+  /* Full-width rows, each its own tap target rather than a small word. */
+  .site-nav-links > a,
+  .site-nav-links > form > button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: var(--space-4);
+    min-height: var(--tap-target);
+    border-bottom: var(--stroke-rule) solid var(--rule-soft);
+  }
+
+  .site-nav-links > form {
+    width: 100%;
+  }
+
+  .site-nav-links > :last-child,
+  .site-nav-links > form:last-child > button {
+    border-bottom: 0;
+  }
+}
+
+/* The one filled call to action in the header. */
+.site-nav-cta {
+  border: var(--stroke-frame) solid var(--rule);
+  background: var(--yellow);
+  padding: var(--space-2) var(--space-4);
+}
+
+.site-nav-cta:hover {
+  background: var(--pink);
+  text-decoration: none;
+}
+
+.site-nav-link-button {
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.site-footer {
+  margin-top: auto;
+  background: var(--ink-black);
+  color: var(--paper);
+}
+
+.site-footer-inner {
+  max-width: var(--measure-wide);
+  margin-inline: auto;
+  padding: var(--space-6) var(--page-pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+@media (min-width: 40rem) {
+  .site-footer-inner {
+    padding-inline: var(--space-6);
+  }
+}
+
+.site-footer-brand {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-footer-links {
+  display: flex;
+  gap: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+.site-footer-links a {
+  color: inherit;
+  text-underline-offset: 4px;
+}
+
+/* --- chart -------------------------------------------------------------- */
+
+.chart-frame {
+  position: relative;
+  width: 100%;
+  height: min(52svh, 430px);
+  min-height: var(--chart-min-height);
+}
+
+.chart-surface {
+  display: block;
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+  /* The single most important line in Phase 1. Without it a finger drag
+     scrolls the page instead of drawing. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: crosshair;
+}
+
+.chart-surface--locked {
+  cursor: default;
+}
+
+.axis-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  fill: var(--ink-muted);
+}
+
+.axis-rule {
+  stroke: var(--rule-soft);
+  stroke-width: var(--stroke-rule);
+}
+
+.region-future {
+  fill: var(--paper-sunk);
+}
+
+.boundary {
+  stroke: var(--ink-muted);
+  stroke-width: var(--stroke-boundary);
+  stroke-dasharray: 3 4;
+  stroke-linecap: round;
+}
+
+.path-truth-known,
+.path-truth-future {
+  fill: none;
+  stroke: var(--ink-truth);
+  stroke-width: var(--stroke-truth);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+ * See components/InkPaths.tsx for why blend and opacity sit on each path and
+ * never on the group: putting either on the <g> would give the group its own
+ * stacking context, the paths would flatten against each other first, and the
+ * density effect would collapse into one smear.
+ */
+.ink-layer > path {
+  fill: none;
+  stroke: var(--ink-crowd);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  mix-blend-mode: var(--ink-blend);
+}
+
+.ink-layer--crowd > path {
+  stroke-width: var(--stroke-crowd);
+  opacity: var(--crowd-path-opacity);
+}
+
+.ink-layer--guess > path {
+  stroke-width: var(--stroke-guess);
+  opacity: var(--guess-opacity);
+}
+
+.path-live {
+  fill: none;
+  stroke: var(--ink-crowd);
+  stroke-width: var(--stroke-guess);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.path-truth-future--animated {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-in var(--reveal-duration) var(--reveal-ease) forwards;
+}
+
+@keyframes draw-in {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path-truth-future--animated {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+.anchor-dot {
+  fill: var(--ink-truth);
+}
+
+/* --- the chart card ------------------------------------------------------ */
+
+/*
+ * A bordered white panel with a yellow strip across the top carrying two
+ * mono labels, and a heavy violet offset. Straight from the mock.
+ */
+.chart-card {
+  background: var(--surface);
+  border: var(--stroke-frame) solid var(--rule);
+  box-shadow: var(--offset-lg) var(--offset-lg) 0 0 var(--violet);
+}
+
+.chart-card-bar {
+  background: var(--yellow);
+  border-bottom: var(--stroke-frame) solid var(--rule);
+  padding: var(--space-2) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+.chart-card-body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.chart-footer {
+  border-top: var(--stroke-rule) solid var(--rule-soft);
+  padding-top: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  color: var(--ink-muted);
+}
+
+.chart-footer a {
+  color: inherit;
+}
+
+/*
+ * The VERIFIED plaque. There is deliberately no "unverified" counterpart -
+ * see the note in components/DrawTheLine.tsx. An unverified chart is kept
+ * away from players by the serving rules, not labelled once it is in front
+ * of them.
+ */
+.verified {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink);
+  border: var(--stroke-frame) solid var(--rule);
+  padding: var(--space-1) var(--space-2);
+  display: inline-block;
+}
+
+/* The admin dashboard is the one place that still names the unverified state. */
+.unverified {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink);
+  border: var(--stroke-frame) solid var(--rule);
+  padding: var(--space-1) var(--space-2);
+  display: inline-block;
+}
+
+/* --- result -------------------------------------------------------------- */
+
+.score {
+  font-family: var(--font-display);
+  font-size: var(--text-score);
+  line-height: 1;
+  letter-spacing: var(--tracking-display);
+  margin: 0;
+}
+
+.score-mark {
+  background: var(--yellow);
+  color: var(--ink);
+  border: var(--stroke-frame) solid var(--rule);
+  padding-inline: var(--space-3);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.metric-term {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  margin: 0;
+  color: var(--ink);
+}
+
+.source {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  color: var(--ink-muted);
+}
+
+.source a {
+  color: inherit;
+}
+
+/* --- forms ---------------------------------------------------------------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.field-input {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  padding: var(--space-3);
+  border: var(--stroke-frame) solid var(--rule);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--ink);
+  min-height: var(--tap-target);
+}
+
+.field-error {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  color: var(--pink);
+}
+
+.autocomplete-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: var(--stroke-frame) solid var(--rule);
+  border-top: none;
+  background: var(--surface);
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.autocomplete-option {
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.autocomplete-option:hover,
+.autocomplete-option[aria-selected="true"] {
+  background: var(--yellow);
+}
+
+/* --- focus --------------------------------------------------------------- */
+
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--stroke-frame) solid var(--violet);
+  outline-offset: 4px;
+}
+
+.band--dark a:focus-visible,
+.band--dark button:focus-visible {
+  outline-color: var(--yellow);
+}
+
+/* --- home: hero ----------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: min(88svh, 860px);
+  display: flex;
+  align-items: center;
+  padding-block: var(--space-8);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.hero-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+}
+
+.hero-meta span:last-child {
+  color: var(--ink);
+}
+
+.hero-lower {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  margin-top: var(--space-7);
+}
+
+.hero-lead {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  line-height: 1.375;
+  max-width: 26rem;
+  margin: 0;
+}
+
+.hero-footnote {
+  margin-top: var(--space-8);
+}
+
+/* --- home: chart section --------------------------------------------------- */
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+
+.section-head-aside {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  max-width: 18rem;
+  margin: 0;
+}
+
+/* --- home: why this exists ------------------------------------------------- */
+
+.why-grid {
+  display: grid;
+  gap: var(--space-6);
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 64rem) {
+  .why-grid {
+    /* 0.7fr / 1.3fr with a 6rem gutter, as measured on the mock. */
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: var(--space-9);
+  }
+}
+
+.why-pull {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  line-height: 1.2;
+  color: var(--yellow);
+  margin: 0;
+}
+
+/* --- home: how it works ---------------------------------------------------- */
+
+.step-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 52rem) {
+  .step-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.step-card-n {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  color: var(--violet);
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.step-card-title {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+  font-weight: var(--weight-body);
+  margin: 0 0 var(--space-3);
+}
+
+.step-card-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  margin: 0;
+}
+
+/* --- home: findings -------------------------------------------------------- */
+
+.findings-grid {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  display: grid;
+  gap: var(--space-5);
+}
+
+@media (min-width: 52rem) {
+  .findings-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.finding-stat {
+  font-family: var(--font-marker);
+  font-size: var(--text-3xl);
+  line-height: 1;
+  color: var(--pink);
+  margin: 0 0 var(--space-1);
+}
+
+.finding-unit {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.finding-claim {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  margin: 0;
+}
+
+/* --- home: cta ------------------------------------------------------------- */
+
+.cta-grid {
+  display: grid;
+  gap: var(--space-7);
+  align-items: start;
+}
+
+@media (min-width: 64rem) {
+  .cta-grid {
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: var(--space-9);
+  }
+}
+
+/*
+ * The mock sets this as one string and lets it wrap inside its 0.8fr
+ * column - that is what stacks it one word per line at this size. Earlier
+ * this used hard-coded <br>s per word, which produced the same shape at
+ * 1280px and a broken one at every other width.
+ */
+.cta-headline {
+  font-family: var(--font-marker);
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  line-height: 0.82;
+  letter-spacing: var(--tracking-display);
+  margin: 0;
+  color: var(--ink);
+}
+
+/* --- history ---------------------------------------------------------------- */
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.history-row {
+  background: var(--surface);
+  border: var(--stroke-frame) solid var(--rule);
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  /* Anchor for the full-row link overlay below. */
+  position: relative;
+  transition: transform 160ms ease-out, box-shadow 160ms ease-out;
+}
+
+/*
+ * The whole row is one link, done with a stretched overlay rather than by
+ * wrapping the row's contents in an <a>.
+ *
+ * Wrapping would nest the score, the sparkline and the metadata inside a
+ * single anchor, which screen readers then announce as one very long link
+ * name. The overlay keeps the markup flat, carries its own aria-label, and
+ * leaves the row's flex layout untouched.
+ */
+.history-row-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.history-row:hover,
+.history-row:focus-within {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--offset-sm) var(--offset-sm) 0 var(--pink);
+}
+
+/* Keyboard focus has to be visible on the overlay, which has no content. */
+.history-row-link:focus-visible {
+  outline: var(--stroke-frame) solid var(--violet);
+  outline-offset: 2px;
+}
+
+.history-body {
+  flex: 1;
+  min-width: 11rem;
+}
+
+.history-title {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  margin: 0 0 var(--space-1);
+}
+
+.history-score {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  margin: 0;
+}
+
+.history-spark {
+  flex-shrink: 0;
+}
+
+.history-spark-guess {
+  fill: none;
+  stroke: var(--ink-crowd);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.history-spark-truth {
+  fill: none;
+  stroke: var(--ink-truth);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- admin ------------------------------------------------------------------ */
+
+.admin-row {
+  background: var(--surface);
+  border: var(--stroke-frame) solid var(--rule);
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.admin-row-chart {
+  flex-shrink: 0;
+}
+
+.admin-row-body {
+  flex: 1;
+  min-width: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.admin-row-title {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  color: var(--ink);
+  margin: 0;
+}
+
+.admin-row-meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  color: var(--ink-muted);
+}
+
+.admin-row-justification {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--ink);
+  margin: 0;
+}
+
+.admin-sparkline-known {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.admin-sparkline-future {
+  fill: none;
+  stroke: var(--ink-truth);
+  stroke-width: 1.5;
+}
+
+.admin-sparkline-boundary {
+  stroke: var(--ink-muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.admin-search {
+  width: 100%;
+}
+
+.admin-search-field {
+  flex: 1;
+  min-width: 14rem;
+}
+
+.admin-analysis {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  color: var(--ink-muted);
+}
+
+/*
+ * Sits ABOVE the chart card, never inside it, so a screen recording cropped
+ * to the card comes out clean - /admin/play is where chart videos get made.
+ */
+.admin-preview-banner {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--yellow);
+  border: var(--stroke-frame) solid var(--ink);
+  padding: var(--space-3);
+  margin: 0;
+}
+
+.admin-finding {
+  border: var(--stroke-frame) solid var(--rule);
+  background: var(--surface);
+  padding: var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: 1.375;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* --- spacing utilities (must stay last) ------------------------------------ */
+
+/*
+ * These are LAST in the file on purpose, and moving them back up will
+ * silently break every stacked layout on the site.
+ *
+ * The typography classes above (.title, .question, .note, ...) all set
+ * `margin: 0` to clear browser defaults. Those declarations have exactly the
+ * same specificity as `.stack-2 > * + *` (one class each), so whichever
+ * appears later in the stylesheet wins. While these utilities sat near the
+ * top of the file, every one of them lost that tie and resolved to
+ * margin-top: 0 - the stacks were inert everywhere they were used.
+ */
+
+.stack-2 > * + * {
+  margin-top: var(--space-2);
+}
+.stack-3 > * + * {
+  margin-top: var(--space-3);
+}
+.stack-4 > * + * {
+  margin-top: var(--space-4);
+}
+.stack-5 > * + * {
+  margin-top: var(--space-5);
+}
+.stack-6 > * + * {
+  margin-top: var(--space-6);
+}
+
+/* --- scroll cue ------------------------------------------------------------ */
+
+/*
+ * The hero's scroll button. A column, not a row: label on top, arrow beneath,
+ * as the mock draws it. On hover it presses DOWN into its own shadow while
+ * the shadow simultaneously grows and turns pink - the panel is being pushed.
+ */
+.scroll-cue {
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.8rem 0.9rem 0.7rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  transition:
+    transform 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.scroll-cue:hover,
+.scroll-cue:active {
+  background: var(--yellow);
+  box-shadow: var(--offset-md) var(--offset-md) 0 0 var(--pink);
+  transform: translateY(0.25rem);
+}
+
+/*
+ * The arrow keeps nodding on its own, independently of hover - it is the
+ * page telling you there is more below, not a response to anything you did.
+ */
+.scroll-cue-arrow {
+  display: inline-block;
+  animation: arrow-drop 1.8s ease-in-out infinite;
+}
+
+@keyframes arrow-drop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(0.4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-arrow {
+    animation: none;
+  }
+  .scroll-cue:hover,
+  .scroll-cue:active {
+    transform: none;
+  }
+}
+
+/* --- nav: play button ------------------------------------------------------ */
+
+/*
+ * A signed-in player's route back to their chart. Previously the only way
+ * was clicking the wordmark, which nobody should have to guess at. Sits
+ * immediately after the brand so it reads as "you are here, this is the
+ * game" rather than as another destination in the list.
+ */
+/*
+ * Play lives beside the wordmark now, not inside the collapsible menu, so the
+ * left margin that used to separate it from the other links is gone - the
+ * brand group's gap does that job.
+ */
+.site-nav-brand-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.site-nav-play {
+  border: var(--stroke-frame) solid var(--rule);
+  background: var(--violet);
+  color: var(--paper);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  text-decoration: none;
+  /* Matches the Menu button beside it so the two read as one row. */
+  min-height: var(--tap-target);
+  display: inline-flex;
+  align-items: center;
+}
+
+.site-nav-play:hover {
+  background: var(--pink);
+  text-decoration: none;
+}
+
+/* --- signed-in play view ---------------------------------------------------- */
+
+/*
+ * The signed-in game gets the same drifting graffiti the anonymous hero has.
+ * `isolate` keeps the marks' multiply blending inside this section, and the
+ * relative position is what the absolutely-positioned field anchors to.
+ */
+.play-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: var(--space-8) var(--space-9);
+}
+
+.play-stage-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- low-effort notice ------------------------------------------------------ */
+
+/*
+ * Shown when the server judges a guess to be deliberate junk and it is not
+ * the first time. Yellow ground rather than red: this is a request to take
+ * part properly, not an error, and most people who see it were messing
+ * about for a moment rather than attacking anything.
+ */
+.notice-warn {
+  border: var(--stroke-frame) solid var(--rule);
+  background: var(--yellow);
+  color: var(--ink);
+  padding: var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  margin: 0;
+}
+
+/* --- credit ----------------------------------------------------------------- */
+
+.credit {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.band--dark .credit {
+  color: var(--rule-soft);
+}
+
+.credit a,
+.site-footer-credit a {
+  color: inherit;
+}
+
+/*
+ * Between the wordmark and the legal links, and smaller than both. No
+ * flex-basis: it used to be forced onto its own row, which made an aside
+ * read like a third section of the footer.
+ */
+.site-footer-credit {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  line-height: var(--leading-snug);
+  color: var(--rule-soft);
+  margin: 0;
+  flex: 1;
+  min-width: 14rem;
+  text-align: center;
+}
+
+@media (max-width: 48rem) {
+  .site-footer-credit {
+    text-align: left;
+    flex-basis: 100%;
+  }
+}
+
+/* --- moderation pills ------------------------------------------------------- */
+
+.pill {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  border: var(--stroke-rule) solid var(--rule);
+  padding: 0 var(--space-2);
+  margin-left: var(--space-2);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.pill--blocked {
+  background: var(--ink-black);
+  color: var(--paper);
+}
+
+.pill--flagged {
+  background: var(--yellow);
+}
+
+/* --- signup: strength meter, terms, honeypot -------------------------------- */
+
+.strength {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.strength-bar {
+  height: 4px;
+  flex: 1;
+  background: var(--rule-soft);
+}
+
+.strength-bar--on {
+  background: var(--violet);
+}
+
+.terms-agree {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  cursor: pointer;
+}
+
+/*
+ * The whole label toggles the checkbox - it always did, because it IS a
+ * <label> - but nothing on screen said so, and it was reported as looking
+ * unclickable. A pointer cursor alone is invisible on touch and to anyone not
+ * hovering, so the text itself now carries a hover and focus affordance.
+ *
+ * Styled as a wide hit area with a visible state change rather than as a link:
+ * it must not be mistaken for the two REAL links inside it (terms of use,
+ * privacy policy), which navigate rather than tick the box.
+ */
+.terms-agree {
+  padding: var(--space-2);
+  margin-inline: calc(var(--space-2) * -1);
+  border: var(--stroke-rule) solid transparent;
+  transition: background 140ms ease-out, border-color 140ms ease-out;
+}
+
+.terms-agree:hover,
+.terms-agree:focus-within {
+  background: var(--surface);
+  border-color: var(--rule-soft);
+}
+
+/* The nested links keep their own underline so they stay distinguishable. */
+.terms-agree a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.terms-agree input {
+  margin-top: 0.2em;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  accent-color: var(--violet);
+  cursor: pointer;
+}
+
+/*
+ * The honeypot. Moved off-screen rather than `display: none` - some bots
+ * skip fields that are display:none specifically because it is the obvious
+ * tell. Kept out of the tab order and the accessibility tree by the markup.
+ */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* --- page-turn chart transition --------------------------------------------- */
+
+/*
+ * The stage the page turn happens on. See components/ChartTransition.tsx for
+ * why the two charts overlap rather than replacing each other.
+ *
+ * `display: grid` with both leaves in the SAME cell is what stops the
+ * container collapsing between charts - the previous version unmounted one
+ * before mounting the other, so the page briefly lost ~600px of height and
+ * everything below it lurched up and back.
+ */
+.page-turn {
+  display: grid;
+  perspective: 1800px;
+  /*
+   * Without this, a rotated leaf is flattened into the parent's plane and
+   * the whole 3D effect collapses into a plain horizontal squash.
+   */
+  transform-style: preserve-3d;
+}
+
+.page-turn > * {
+  grid-area: 1 / 1;
+}
+
+.page-turn-leaf {
+  /* The spine. Rotation happens about the left edge, like a bound page. */
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  /*
+   * The card already paints its own opaque ground, but the leaf needs one
+   * too: mid-turn the outgoing page sits directly over the incoming one, and
+   * a transparent leaf would show both charts' lines crossing through each
+   * other.
+   */
+  backface-visibility: hidden;
+}
+
+/*
+ * Charts are tall. Anchoring the turn to the top of the viewport-facing edge
+ * keeps the card's header - the question being answered - the most stable
+ * part of the movement, rather than having the whole thing pivot about its
+ * middle.
+ */
+@media (min-width: 48rem) {
+  .page-turn-leaf {
+    transform-origin: left 40%;
+  }
+}
+
+/* --- reliability badges ------------------------------------------------------ */
+
+/*
+ * Green / yellow / red, as literal colours - an admin scanning 352 rows
+ * should be able to see reliability without reading anything. The word is
+ * printed too rather than relying on colour alone, because colour alone is
+ * unreadable to anyone with a red-green deficiency, which is the single most
+ * common form.
+ */
+.rel {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  border: var(--stroke-rule) solid var(--rule);
+  padding: 0 var(--space-2);
+  margin-left: var(--space-2);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.rel--green {
+  background: var(--rel-green);
+  color: var(--ink);
+}
+
+.rel--yellow {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+.rel--red {
+  background: var(--rel-red);
+  color: var(--paper);
+}
+
+
+/* --- contact -------------------------------------------------------------- */
+
+/*
+ * The address must sit on ONE LINE at every width, so it is sized to fit
+ * rather than allowed to wrap.
+ *
+ * At the inherited .title size (48px) a 25-character email needs roughly
+ * 600px, and the reading measure gives it about 584px inside the card - so it
+ * broke mid-word on desktop, splitting "...gmail.co / m". Sizing it off the
+ * viewport keeps it on one line from 320px up, and the ceiling stops it
+ * growing past the point where it would collide with the measure again.
+ *
+ * The break rules stay as a floor-level safety net: an address longer than
+ * this one should degrade by wrapping, never by overflowing the card.
+ */
+.contact-address {
+  font-size: clamp(1.05rem, 4.6vw, 2.125rem);
+  line-height: var(--leading-tight);
+  overflow-wrap: anywhere;
+}
